@@ -1,0 +1,107 @@
+在Linux上制作一个简单的带有头文件的动态库的流程可以分为几个步骤：编写源代码、创建头文件、编译动态库，以及测试动态库。下面是详细的流程。
+
+### 步骤 1: 编写源代码
+
+首先，创建一个源文件，例如 `mylib.c`，并在其中编写一些简单的函数。
+
+```c
+// mylib.c
+#include <stdio.h>
+
+void hello() {
+    printf("Hello, World from mylib!\n");
+}
+
+int add(int a, int b) {
+    return a + b;
+}
+```
+
+### 步骤 2: 创建头文件
+
+接下来，创建一个头文件 `mylib.h`，声明你在源文件中定义的函数。
+
+```c
+// mylib.h
+#ifndef MYLIB_H
+#define MYLIB_H
+
+void hello();
+int add(int a, int b);
+
+#endif // MYLIB_H
+```
+
+### 步骤 3: 编译动态库
+
+现在，你需要编译源文件并创建动态库。在Linux中，动态库的文件扩展名通常是 `.so`。你可以使用 `gcc` 来完成这个工作。
+
+```bash
+gcc -fPIC -c mylib.c  # 生成位置无关的代码 (.o 文件)
+gcc -shared -o libmylib.so mylib.o  # 创建动态库 (.so 文件)
+```
+
+解释：
+- `-fPIC`：生成位置无关的代码，使得该代码可以在任何内存地址运行。
+- `-c`：编译源代码为目标文件，但不进行链接。
+- `-shared`：生成共享库（动态库）。
+
+### 步骤 4: 测试动态库
+
+创建一个测试程序 `test.c` 来使用这个动态库。
+
+```c
+// test.c
+#include <stdio.h>
+#include "mylib.h"
+
+int main() {
+    hello();
+    int result = add(5, 10);
+    printf("Result of add: %d\n", result);
+    return 0;
+}
+```
+
+编译测试程序时，需要告诉编译器动态库的路径，并链接动态库。
+
+```bash
+gcc -o test test.c -L. -lmylib  # -L. 指定库路径为当前目录，-lmylib 指定使用mylib.so
+```
+
+### 步骤 5: 运行程序
+
+在执行程序之前，确保动态链接库在系统的搜索路径中，或者使用 `LD_LIBRARY_PATH` 环境变量指定库的路径。例如：
+
+```bash
+export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH
+./test  # 执行测试程序
+```
+
+### 完整命令汇总
+
+1. 创建源文件和头文件
+2. 编译库:
+   ```bash
+   gcc -fPIC -c mylib.c
+   gcc -shared -o libmylib.so mylib.o
+   ```
+3. 编译测试程序:
+   ```bash
+   gcc -o test test.c -L. -lmylib
+   ```
+4. 运行测试程序:
+   ```bash
+   export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH
+   ./test
+   ```
+
+你将会看到输出：
+```
+Hello, World from mylib!
+Result of add: 15
+```
+
+这样，你就成功地创建了一个简单的带头文件的动态库，并在程序中使用它了。
+
+
