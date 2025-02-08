@@ -1,5 +1,5 @@
 ### 步骤1：编写源代码
-
+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
 首先，您需要编写一些源代码，通常是C或C++文件。假设我们创建一个简单的数学库，该库包含加法和减法功能。创建一个名为 `math_lib.c` 的文件：
 
 ```c
